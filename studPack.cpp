@@ -34,13 +34,14 @@ public:
 };
 
 class Teacher {
-private:
+protected:
     string subject;
     bool mood;
+    int gradeCounter;
 
 public:
     Teacher(string NewSubject)
-        : subject(NewSubject), mood(rand() % 2 == 0) {}
+        : subject(NewSubject), mood(rand() % 2 == 0), gradeCounter(0) {}
 
     virtual void giveGrade(Student& student)
     {
@@ -64,6 +65,11 @@ public:
         }
 
         student.assignGrade(randomGrade);
+
+        gradeCounter++;
+        if (gradeCounter % 5 == 0) {
+            mood = !mood;
+        }
     }
 
     string getSubject() const { return subject; }
@@ -89,6 +95,36 @@ public:
     void giveGrade(Student& student) override
     {
         student.assignGrade(2);
+    }
+};
+
+class OftenChangingMoodTeacher : protected Teacher {
+public:
+    OftenChangingMoodTeacher(string NewSubject)
+        : Teacher(NewSubject) {}
+
+    void giveGrade(Student& student) override
+    {
+        student.assignGrade(5);
+        gradeCounter++;
+        if (gradeCounter % 3 == 0) {
+            mood = !mood;
+        }
+    }
+};
+
+class RarelyChangingMoodTeacher : protected Teacher {
+public:
+    RarelyChangingMoodTeacher(string NewSubject)
+        : Teacher(NewSubject) {}
+
+    void giveGrade(Student& student) override
+    {
+        student.assignGrade(5);
+        gradeCounter++;
+        if (gradeCounter % 10 == 0) {
+            mood = !mood;
+        }
     }
 };
 
