@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include <algorithm>
 
 using namespace std;
 
@@ -128,6 +129,89 @@ public:
     }
 };
 
+class Parent {
+protected:
+    bool mood;
+    vector<Student*> children;
+
+public:
+    Parent() : mood(rand() % 2 == 0) {}
+
+    void addChild(Student* child) {
+        children.push_back(child);
+    }
+
+    void tellAboutAllChildren() {
+        cout << "About all children:" << endl;
+        for (Student* child : children) {
+            tellAboutChild(child);
+        }
+    }
+
+    void tellAboutRandomChild() {
+        if (children.empty()) {
+            cout << "No children to talk about." << endl;
+            return;
+        }
+
+        int randomChildIndex = rand() % children.size();
+        tellAboutChild(children[randomChildIndex]);
+    }
+
+    void tellAboutSpecificChild(Student* child) {
+        auto it = find(children.begin(), children.end(), child);
+        if (it != children.end()) {
+            tellAboutChild(child);
+        } else {
+            cout << "Error: No such a child." << endl;
+        }
+    }
+
+    void tellAboutChild(Student* child) {
+        cout << "About " << child->getFirstName() << ":" << endl;
+        if (mood && child->isExcellentStudent()) {
+            cout << "A proud parent: My child is an excellent student!" << endl;
+        } else if (!mood && child->isExcellentStudent()) {
+            cout << "A bit disappointed: My child is a good student." << endl;
+        } else if (mood && !child->isExcellentStudent()) {
+            cout << "Encouragement: My child is working hard." << endl;
+        } else {
+            cout << "Sad: My child needs to improve." << endl;
+        }
+        cout << endl;
+    }
+
+    void tellAboutAllChildrenSummary() {
+        cout << "Summary about all children:" << endl;
+        if (children.empty()) {
+            cout << "No children to talk about." << endl;
+            return;
+        }
+
+        int excellentCount = 0;
+        int totalChildren = children.size();
+
+        for (Student* child : children) {
+            if (child->isExcellentStudent()) {
+                excellentCount++;
+            }
+        }
+
+        float average = static_cast<float>(excellentCount) / totalChildren;
+
+        if (mood && average >= 0.5) {
+            cout << "A very proud parent: Most of my children are excellent students!" << endl;
+        } else if (!mood && average >= 0.5) {
+            cout << "A bit disappointed: Most of my children are good students." << endl;
+        } else if (mood && average < 0.5) {
+            cout << "Encouragement: My children are working hard on average." << endl;
+        } else {
+            cout << "Sad: My children need to improve on average." << endl;
+        }
+        cout << endl;
+    }
+};
+
 class Lesson {
 private:
     Teacher teacher;
@@ -230,6 +314,15 @@ int main()
         cout << endl;
     }
 
+    Parent p1;
+    p1.addChild(&s1);
+    p1.addChild(&s2);
+    p1.addChild(&s3);
+
+    p1.tellAboutAllChildren();
+    p1.tellAboutRandomChild();
+    p1.tellAboutSpecificChild(&s3);
+    p1.tellAboutAllChildrenSummary();
 
     return 0;
 }
