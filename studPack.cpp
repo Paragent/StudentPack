@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <ctime>
+
 using namespace std;
 
 class Student{
@@ -31,12 +33,37 @@ class Teacher
 {
     private:
         string subject;
+        bool mood;
 
     public:
-        Teacher(string NewSubject) { this->subject = NewSubject; }
-        void giveGrade(Student& student, int grade){
-            student.assignGrade(grade);
+        Teacher(string NewSubject) : subject(NewSubject)
+    {
+        mood = (rand() % 2 == 0);
+    }
+
+    void giveGrade(Student& student)
+    {
+        int randomGrade = 0;
+
+        if (mood && student.isExcellentStudent())
+        {
+            randomGrade = 5;
         }
+        else if (!mood && student.isExcellentStudent())
+        {
+            randomGrade = (rand() % 2 == 0) ? 4 : 5;
+        }
+        else if (mood && !student.isExcellentStudent())
+        {
+            randomGrade = 4;
+        }
+        else if (!mood && !student.isExcellentStudent())
+        {
+            randomGrade = (rand() % 2 == 0) ? 2 : 3;
+        }
+
+        student.assignGrade(randomGrade);
+    }
 
         string getSubject(){
             return this->subject;
@@ -45,6 +72,8 @@ class Teacher
 
 int main()
 {
+    srand(time(0));
+
     Teacher t1("OOP");
     Teacher t2("Math");
     Teacher t3("English");
@@ -65,22 +94,22 @@ int main()
     s3.assignGrade(4);
     s3.assignGrade(4);
 
-    t1.giveGrade(s1, 5);
-    t1.giveGrade(s2, 4);
-    t1.giveGrade(s3, 2);
+    t1.giveGrade(s1);
+    t1.giveGrade(s2);
+    t1.giveGrade(s3);
 
-    t1.giveGrade(s1, 3);
-    t1.giveGrade(s2, 3);
-    t1.giveGrade(s3, 3);
+    t1.giveGrade(s1);
+    t1.giveGrade(s2);
+    t1.giveGrade(s3);
 
-    t3.giveGrade(s1, 2);
-    t3.giveGrade(s2, 2);
-    t3.giveGrade(s3, 2);
+    t3.giveGrade(s1);
+    t3.giveGrade(s2);
+    t3.giveGrade(s3);
 
     cout << (s1.isExcellentStudent()?"Excellent":"Not excellent") << endl;
     cout << (s2.isExcellentStudent()?"Excellent":"Not excellent") << endl;
     cout << (s3.isExcellentStudent()?"Excellent":"Not excellent") << endl;
-    
+
     cout << t1.getSubject() << endl;
     cout << t2.getSubject() << endl;
     cout << t3.getSubject() << endl;
