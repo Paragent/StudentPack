@@ -17,6 +17,7 @@ public:
 
     string getFirstName() const { return firstName; }
     vector<int> getGrades() const { return grades; }
+    int getNumGrades() const { return grades.size(); }
     void assignGrade(int NewGrade) { grades.push_back(NewGrade); }
     bool isExcellentStudent() const
     {
@@ -41,7 +42,7 @@ public:
     Teacher(string NewSubject)
         : subject(NewSubject), mood(rand() % 2 == 0) {}
 
-    void giveGrade(Student& student)
+    virtual void giveGrade(Student& student)
     {
         int randomGrade = 0;
 
@@ -67,6 +68,28 @@ public:
 
     string getSubject() const { return subject; }
     bool getMood() const { return mood; }
+};
+
+class fiveTeacher : public Teacher {
+public:
+    fiveTeacher(string NewSubject)
+        : Teacher(NewSubject) {}
+
+    void giveGrade(Student& student) override
+    {
+        student.assignGrade(5);
+    }
+};
+
+class twoTeacher : public Teacher {
+public:
+    twoTeacher(string NewSubject)
+        : Teacher(NewSubject) {}
+
+    void giveGrade(Student& student) override
+    {
+        student.assignGrade(2);
+    }
 };
 
 class Lesson {
@@ -99,13 +122,13 @@ int main()
 {
     srand(time(0));
 
-    Teacher t1("OOP");
+    fiveTeacher t1("OOP");
     Lesson l1(t1);
 
     Teacher t2("Math");
     Lesson l2(t2);
 
-    Teacher t3("English");
+    twoTeacher t3("English");
     Lesson l3(t3);
 
 
@@ -129,9 +152,9 @@ int main()
     t1.giveGrade(s2);
     t1.giveGrade(s3);
 
-    t1.giveGrade(s1);
-    t1.giveGrade(s2);
-    t1.giveGrade(s3);
+    t2.giveGrade(s1);
+    t2.giveGrade(s2);
+    t2.giveGrade(s3);
 
     t3.giveGrade(s1);
     t3.giveGrade(s2);
@@ -143,7 +166,10 @@ int main()
 
     l2.addStudent(s1);
     l2.addStudent(s2);
+    l2.addStudent(s3);
 
+    l3.addStudent(s1);
+    l3.addStudent(s2);
     l3.addStudent(s3);
 
     cout << (s1.isExcellentStudent()?"Excellent":"Not excellent") << endl;
@@ -158,11 +184,12 @@ int main()
     l2.conductLesson();
     l3.conductLesson();
 
-    for (const Student& stud : l1.getStudents())
+
+    for (const Student& stud : l3.getStudents())
     {
         cout << stud.getFirstName() << "'s grades: ";
-        for (int grade : stud.getGrades()) {
-            cout << grade << " ";
+        for (int i=0; i < stud.getNumGrades(); i++) {
+            cout << stud.getGrades()[i] << " ";
         }
         cout << endl;
     }
