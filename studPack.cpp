@@ -174,7 +174,7 @@ public:
 }
 
 
-    void tellAboutChild(Student* child) {
+    virtual void tellAboutChild(Student* child) {
         cout << "About " << child->getFirstName() << ":" << endl;
         if (mood && child->isExcellentStudent()) {
             cout << "A proud parent: My child is an excellent student!" << endl;
@@ -188,7 +188,7 @@ public:
         cout << endl;
     }
 
-    void tellAboutAllChildrenSummary() {
+    virtual void tellAboutAllChildrenSummary() {
         cout << "Summary about all children:" << endl;
         if (children.empty()) {
             cout << "No children to talk about." << endl;
@@ -218,7 +218,30 @@ public:
         cout << endl;
     }
     friend class Meeting;
+    friend class Grandmother;
 };
+
+class Grandmother : public Parent {
+public:
+    Grandmother() : Parent() {}
+
+    void tellAboutChild(Student* child) override {
+        cout << "About " << child->getFirstName() << " (Grandchild):" << endl;
+        cout << "Always proud: My grandchild is amazing!" << endl << endl;
+    }
+
+    void tellAboutAllChildrenSummary() override {
+        cout << "Summary about all grandchildren:" << endl;
+        if (children.empty()) {
+            cout << "No grandchildren to talk about." << endl;
+            return;
+        }
+
+        cout << "Always proud: All my grandchildren are amazing!" << endl << endl;
+    }
+    friend class Parent;
+};
+
 
 class Lesson {
 private:
@@ -269,10 +292,6 @@ public:
     void conductMeeting() {
         for (Teacher& teacher : teachers) {
             cout << "Discussion about " << teacher.getSubject() << " teacher:" << endl;
-
-            for (Student& student : students) {
-                teacher.giveGrade(student);
-            }
         }
 
         for (Parent& parent : parents) {
@@ -364,6 +383,11 @@ int main()
     }
 
     Parent p1, p2;
+    Grandmother g1;
+    g1.addChild(&s1);
+    Grandmother g2;
+    g2.addChild(&s2);
+    g2.addChild(&s3);
     p1.addChild(&s1);
     p1.addChild(&s2);
     p2.addChild(&s3);
@@ -380,8 +404,13 @@ int main()
     meeting.addStudent(s1);
     meeting.addStudent(s2);
     meeting.addStudent(s3);
+    meeting.addParent(g1);
+    meeting.addParent(g2);
 
     meeting.conductMeeting();
+
+    g1.tellAboutAllChildrenSummary();
+    g2.tellAboutRandomChild();
 
     return 0;
 }
