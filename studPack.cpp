@@ -32,7 +32,12 @@ public:
 
         return (average >= 4.5);
     }
+
+    bool operator==(const Student& other) const {
+        return firstName == other.firstName;
+    }
 };
+
 
 class Teacher {
 protected:
@@ -130,7 +135,7 @@ public:
 };
 
 class Parent {
-protected:
+private:
     bool mood;
     vector<Student*> children;
 
@@ -159,13 +164,15 @@ public:
     }
 
     void tellAboutSpecificChild(Student* child) {
-        auto it = find(children.begin(), children.end(), child);
-        if (it != children.end()) {
-            tellAboutChild(child);
-        } else {
-            cout << "Error: No such a child." << endl;
-        }
+    auto it = find_if(children.begin(), children.end(),
+                      [child](const Student* s) { return s == child; });
+    if (it != children.end()) {
+        tellAboutChild(*it);
+    } else {
+        cout << "Error: No such a child." << endl;
     }
+}
+
 
     void tellAboutChild(Student* child) {
         cout << "About " << child->getFirstName() << ":" << endl;
@@ -210,6 +217,7 @@ public:
         }
         cout << endl;
     }
+    friend class Meeting;
 };
 
 class Lesson {
@@ -236,6 +244,47 @@ public:
 
     Teacher getTeacher() const { return teacher; }
     vector<Student> getStudents() const { return students; }
+};
+
+
+class Meeting{
+private:
+    vector<Teacher> teachers;
+    vector<Parent> parents;
+    vector<Student> students;
+
+public:
+    void addTeacher(const Teacher& teacher) {
+        teachers.push_back(teacher);
+    }
+
+    void addParent(const Parent& parent) {
+        parents.push_back(parent);
+    }
+
+    void addStudent(const Student& student) {
+        students.push_back(student);
+    }
+
+    void conductMeeting() {
+        for (Teacher& teacher : teachers) {
+            cout << "Discussion about " << teacher.getSubject() << " teacher:" << endl;
+
+            for (Student& student : students) {
+                teacher.giveGrade(student);
+            }
+        }
+
+        for (Parent& parent : parents) {
+            for (Student* child : parent.children) {
+                auto itStudent = find(students.begin(), students.end(), *child);
+                if (itStudent != students.end()) {
+                    parent.tellAboutChild(&(*itStudent));
+                }
+            }
+        }
+    }
+    friend class Parent;
 };
 
 int main()
@@ -314,15 +363,25 @@ int main()
         cout << endl;
     }
 
-    Parent p1;
+    Parent p1, p2;
     p1.addChild(&s1);
     p1.addChild(&s2);
-    p1.addChild(&s3);
+    p2.addChild(&s3);
 
     p1.tellAboutAllChildren();
     p1.tellAboutRandomChild();
     p1.tellAboutSpecificChild(&s3);
     p1.tellAboutAllChildrenSummary();
+
+    Meeting meeting;
+    meeting.addTeacher(t3);
+    meeting.addParent(p1);
+    meeting.addParent(p2);
+    meeting.addStudent(s1);
+    meeting.addStudent(s2);
+    meeting.addStudent(s3);
+
+    meeting.conductMeeting();
 
     return 0;
 }
